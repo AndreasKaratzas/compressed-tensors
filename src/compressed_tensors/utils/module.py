@@ -4,6 +4,7 @@
 from itertools import chain
 
 import torch
+from compressed_tensors.offload import disable_onloading
 from compressed_tensors.utils.type import TensorStateDict
 
 
@@ -42,7 +43,8 @@ def replace_direct_state_dict(module: torch.nn.Module, new_state_dict: TensorSta
     :param module: the module to update
     :param new_state_dict: dict of new parameter/buffer values
     """
-    old_state_dict = get_direct_state_dict(module)
+    with disable_onloading():
+        old_state_dict = get_direct_state_dict(module)
 
     for name in old_state_dict:
         # remove attributes that don't exist in the new state
@@ -50,11 +52,10 @@ def replace_direct_state_dict(module: torch.nn.Module, new_state_dict: TensorSta
             delattr(module, name)
 
     for name, new_value in new_state_dict.items():
-        # skip unchanged values
-        if name not in old_state_dict or old_state_dict[name] is not new_value:
-            # overwrite (not update) if param already existed
-            if hasattr(module, name):
-                delattr(module, name)
+        if name in old_state_dict:
+            if old_state_dict[name] is new_value:
+                continue
+            delattr(module, name)
 
-            # treat all new tensors as parameters (not buffers)
-            setattr(module, name, torch.nn.Parameter(new_value, requires_grad=False))
+        # treat all new tensors as parameters (not buffers)
+        setattr(module, name, torch.nn.Parameter(new_value, requires_grad=False))
