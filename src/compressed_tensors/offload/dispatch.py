@@ -7,6 +7,7 @@ from functools import partial
 from typing import Any, Optional, TypeVar
 
 import torch
+from tqdm import tqdm
 import torch.distributed as dist
 from compressed_tensors.offload.cache import OffloadCache
 from compressed_tensors.offload.module import offload_module, remove_module_offload
@@ -80,7 +81,8 @@ def dispatch_with_map(
     :param device_map: device map specifying the onload and offload of each module
     :param offload_dir: optional directory for disk offloading
     """
-    for name, (onload_device, offload_device) in device_map.items():
+    device_map_items = tqdm(list(device_map.items()), desc="Dispatching model")
+    for name, (onload_device, offload_device) in device_map_items:
         module = model.get_submodule(name)
 
         if offload_device == "disk":
