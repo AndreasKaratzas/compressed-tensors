@@ -14,8 +14,8 @@ __all__ = [
     "is_rank0",
     "init_dist",
     "as_single_threaded",
-    "set_main_process",
-    "is_main_process",
+    "set_source_process",
+    "is_source_process",
     "as_broadcastable",
 ]
 
@@ -107,7 +107,7 @@ def as_single_threaded():
 
 
 @contextlib.contextmanager
-def set_main_process(src_rank: int):
+def set_source_process(src_rank: int):
     """
     Context manager to temporarily designate a different rank as the main process.
 
@@ -118,8 +118,8 @@ def set_main_process(src_rank: int):
     :param src_rank: the rank to designate as the main process within the context
 
     Example:
-        >>> with set_main_process(2):
-        ...     if is_main_process():
+        >>> with set_source_process(2):
+        ...     if is_source_process():
         ...         # Only rank 2 executes this
         ...         print("I'm the temporary main process")
     """
@@ -130,12 +130,12 @@ def set_main_process(src_rank: int):
     SRC_RANK = restore_rank
 
 
-def is_main_process() -> bool:
+def is_source_process() -> bool:
     """
-    Check if the current process is the designated main process.
+    Check if the current process is the designated source process.
 
-    The main process is determined by SRC_RANK (default 0) and can be
-    temporarily changed using the set_main_process context manager.
+    The source process is determined by SRC_RANK (default 0) and can be
+    temporarily changed using the set_source_process context manager.
 
     :return: True if not distributed or if current rank equals SRC_RANK, False otherwise
     """

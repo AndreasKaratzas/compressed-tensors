@@ -7,7 +7,7 @@ import torch
 import torch.distributed as dist
 from compressed_tensors.distributed.assign import greedy_bin_packing
 from compressed_tensors.offload import disable_onloading, to_meta
-from compressed_tensors.offload.dist_utils import as_single_threaded, set_main_process
+from compressed_tensors.offload.dist_utils import as_single_threaded, set_source_process
 from compressed_tensors.offload.utils import module_size
 from compressed_tensors.utils.module import (
     get_direct_state_dict,
@@ -71,5 +71,5 @@ def replace_module_parallel(
     for module in modules:
         with disable_onloading():
             state_dict = get_direct_state_dict(module)
-        with set_main_process(assigned_rank[module]):
+        with set_source_process(assigned_rank[module]):
             replace_direct_state_dict(module, state_dict)  # 4. broadcast

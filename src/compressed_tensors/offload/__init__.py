@@ -21,7 +21,7 @@ from compressed_tensors.offload.dist_utils import (
     init_dist,
     is_distributed,
     is_rank0,
-    set_main_process,
+    set_source_process,
 )
 from compressed_tensors.offload.load import load_offloaded_model
 from compressed_tensors.offload.module import offload_module, unwrap_offload_forward
@@ -63,7 +63,7 @@ __all__ = [
     "init_dist",
     "as_broadcastable",
     "as_single_threaded",
-    "set_main_process",
+    "set_source_process",
     "to_meta",
 ]
 
