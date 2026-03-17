@@ -7,7 +7,6 @@ from functools import partial
 from typing import Any, Optional, TypeVar
 
 import torch
-from tqdm import tqdm
 import torch.distributed as dist
 from compressed_tensors.offload.cache import OffloadCache
 from compressed_tensors.offload.module import offload_module, remove_module_offload
@@ -19,6 +18,7 @@ from compressed_tensors.offload.utils import (
 from compressed_tensors.utils import getattr_chain
 from compressed_tensors.utils.binary_search import SearchFailureError, max_binary_search
 from loguru import logger
+from tqdm import tqdm
 from transformers import PreTrainedModel
 
 
